@@ -96,19 +96,6 @@ def render_text_eda(summary: dict):
 
 # ================== EDA ==================
 
-def dataframe_preview_metrics(df: pd.DataFrame):
-    """표 형태 미리보기(head)를 없애고, 메트릭/리스트로만 요약"""
-    shape = df.shape
-    with st.container():
-        st.markdown("#### 📌 데이터 미리보기(요약)")
-        c1, c2, c3 = st.columns(3)
-        c1.metric("행(Row)", f"{shape[0]:,}")
-        c2.metric("열(Column)", f"{shape[1]:,}")
-        c3.metric("결측치 포함 열 수", f"{int((df.isna().any()).sum()):,}")
-
-        st.markdown("**컬럼 목록(상위 20개까지)**")
-        st.write(", ".join(list(df.columns)[:20]))
-
 def dataframe_eda_retail(df: pd.DataFrame):
     """EDA"""
     # 3-1) 결측치/기본 통계
@@ -122,7 +109,7 @@ def dataframe_eda_retail(df: pd.DataFrame):
         st.dataframe(df[num_cols].describe().T, use_container_width=True)
 
 
-    # 3-2) 빠른 시각화(간단)
+    # 3-2) 빠른 시각화
     if num_cols:
         with st.expander("📊 빠른 시각화"):
             target = st.selectbox("히스토그램 대상", num_cols, key="hist_col")
@@ -281,8 +268,6 @@ if up is not None:
         schema = {c: str(df[c].dtype) for c in df.columns}
         preview = {"columns": df.columns.tolist(), "dtypes": schema}
         st.text_area("테이블 스키마(JSON)", json.dumps(preview, ensure_ascii=False, indent=2), height=200)
-        # 2-1) 데이터 미리보기(메트릭형) — 표 head 제거
-        dataframe_preview_metrics(df)
         # 세션 보존
         st.session_state["df"] = df
     elif doc_text is not None:
